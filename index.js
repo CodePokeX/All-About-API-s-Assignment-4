@@ -1,7 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const secretKey = require('./secretKey.js').key;
-console.log(secretKey);
 const myApp= express();
 myApp.use(express.json());
 
@@ -28,38 +27,6 @@ myApp.get("/", (req,res)=>{
 myApp.get("/home", (req,res)=>{
     res.send("Please register first at /register. Then you can login using your password at /login. Then you can create your dream list at /list.")
 });
-
-// const duplicateCheck=async (req,res)=>{
-//     const searchId=req.query.uid;
-//     let uName=req.body.name;
-//     if(uName===undefined){
-//         uName=(await userCollection.doc(searchId).get()).data().name;
-//     }
-//     let uMail=req.body.email;
-//     if(uMail===undefined){
-//         uMail=(await userCollection.doc(searchId).get()).data().email;
-//     }
-//     let uAge=req.body.age;
-//     if(uAge===undefined){
-//         uAge=(await userCollection.doc(searchId).get()).data().age;
-//     }
-//     const conditions = [
-//         { field: 'email', value: uMail },
-//         { field: 'name', value: uName },
-//         { field: 'age', value: uAge}
-//     ];
-//     let query = userCollection;
-//     conditions.forEach((condition) => {
-//     query = query.where(condition.field, '==', condition.value);
-//     });
-//     const querySnapshot= await query.get();
-//     if (!querySnapshot.empty) {
-//         return false;
-//     } 
-//     else {
-//         return true;                            
-//     }
-// };
 
 myApp.use(async(req,res,next)=>{
     if(!(req.body.hasOwnProperty("name") || req.body.hasOwnProperty("email") || req.body.hasOwnProperty("age") || req.body.hasOwnProperty("password"))){
@@ -151,22 +118,6 @@ myApp.post("/register", async (req,res)=>{
             "age":uAge,
             "password":uPassword
         };
-    //    duplicateCheck(req,res)
-    //    .then((val)=>{
-    //     if(val){
-    //         userCollection.add(user).then((doc)=>{
-    //             doc.update({
-    //             "userid":doc.id
-    //         });            
-    //         userCollection.doc(doc.id).get().then((doc)=>{
-    //             res.send(`${JSON.stringify(doc.data())} was created successfully!\n\nPlease remember your user id. If forgotten, you will not be able to retrieve your data!`);
-    //         });
-    //         });
-    //     }
-    //     else{
-    //         res.status(400).send(`User already exists!`);
-    //     }
-    //    });
     userCollection.add(user).then((doc)=>{
         doc.update({
         "userid":doc.id
@@ -266,35 +217,6 @@ myApp.put("/user", async (req,res)=>{
         }
         else{
             if(uAge!==undefined||uMail!==undefined||uName!==undefined||uPassword!==undefined){
-                // duplicateCheck(req,res)
-                // .then((val)=>{
-                //     if(val){
-                //         if(uAge!==undefined){
-                //             doc.ref.update({
-                //                 age:uAge
-                //             });
-                //         }
-                //         if(uName!==undefined){
-                //             doc.ref.update({
-                //                 name:uName
-                //             });
-                //         }
-                //         if(uMail!==undefined){
-                //             doc.ref.update({
-                //                 email:uMail
-                //             });
-                //         }
-                //         if(uPassword!==undefined){
-                //             doc.ref.update({
-                //                 password:uPassword
-                //             });
-                //         }
-                //         res.send(`All updates made successfully!`);
-                //     }
-                // else{
-                //     res.status(400).send(`User already exists!`);
-                //     }
-                // });
                     if(uAge!==undefined){
                         doc.ref.update({
                             age:uAge
@@ -332,12 +254,7 @@ myApp.get("/list",async (req,res)=>{
 myApp.post("/list", async (req,res)=>{
     const usrId=req.query.uid;
     const item=req.body.item;
-    const doc=await userCollection.doc(usrId).get();
-                // const docRef=userCollection.doc(usrId);
-                // const itemAdd=await docRef.update({
-                //     itemList: FieldValue.arrayUnion(item)
-                // })
-                // res.send(`${item} added successfully!`);    
+    const doc=await userCollection.doc(usrId).get(); 
     doc.ref.update({
         itemList: FieldValue.arrayUnion(item)
     })
